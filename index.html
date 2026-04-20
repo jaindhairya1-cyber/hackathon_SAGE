@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FinsightAI — Financial Intelligence Platform</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+  <style>
+    /* ══════════════════════════════════════════
+       CSS VARIABLES — Cyber-Trust Theme
+    ══════════════════════════════════════════ */
+    :root {
+      --primary:   #635BFF;
+      --accent:    #00FFC2;
+      --bg:        #0F172A;
+      --surface:   #1E293B;
+      --surface2:  #162032;
+      --border:    rgba(99, 91, 255, 0.22);
+      --muted:     #64748B;
+      --text:      #E2E8F0;
+      --glow:      rgba(99, 91, 255, 0.35);
+      --glow-mint: rgba(0, 255, 194, 0.2);
+      --r:         16px;
+      --r-sm:      10px;
+    }
+
+    /* ══════════════════════════════════════════
+       RESET & BASE
+    ══════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.5;
+    }
+    a { text-decoration: none; color: inherit; }
+    button { font-family: inherit; cursor: pointer; }
+    ul { list-style: none; }
+    ::-webkit-scrollbar        { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track  { background: var(--surface); }
+    ::-webkit-scrollbar-thumb  { background: var(--primary); border-radius: 3px; }
+
+    /* ══════════════════════════════════════════
+       ANIMATIONS
+    ══════════════════════════════════════════ */
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulseGlow {
+      0%, 100% { box-shadow: 0 0 10px var(--glow); }
+      50%       { box-shadow: 0 0 24px var(--glow); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+    .anim-1 { animation: slideUp 0.45s ease both; }
+    .anim-2 { animation: slideUp 0.45s 0.08s ease both; }
+    .anim-3 { animation: slideUp 0.45s 0.16s ease both; }
+    .anim-4 { animation: slideUp 0.45s 0.24s ease both; }
+    .anim-5 { animation: slideUp 0.45s 0.32s ease both; }
+    .anim-6 { animation: slideUp 0.45s 0.40s ease both; }
+
+    /* ══════════════════════════════════════════
+       TOPBAR
+    ══════════════════════════════════════════ */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 24px;
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .logo-icon {
+      width: 36px;
+      height: 36px;
+      background: var(--primary);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 14px var(--glow);
+      animation: pulseGlow 3s ease-in-out infinite;
+    }
+    .logo-icon svg { width: 18px; height: 18px; }
+    .logo-text { font-size: 17px; font-weight: 700; letter-spacing: -0.3px; }
+    .logo-text span { color: var(--accent); }
+
+    .topbar-controls { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+    /* Language Toggle */
+    .lang-toggle {
+      display: flex;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+    }
+    .lang-btn {
+      padding: 5px 14px;
+      font-size: 12px;
+      font-weight: 500;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      transition: all 0.2s;
+    }
+    .lang-btn.active {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    /* Mode Switcher */
+    .mode-switcher {
+      display: flex;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 28px;
+      padding: 4px;
+      gap: 4px;
+    }
+    .mode-btn {
+      padding: 7px 18px;
+      border-radius: 22px;
+      font-size: 13px;
+      font-weight: 500;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      transition: all 0.25s;
+    }
+    .mode-btn.active-basic {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 0 14px var(--glow);
+    }
+    .mode-btn.active-pro {
+      background: var(--accent);
+      color: #0F172A;
+      box-shadow: 0 0 14px var(--glow-mint);
+    }
+
+    /* Notif + Avatar */
+    .icon-btn {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      transition: border-color 0.2s;
+    }
+    .icon-btn:hover { border-color: var(--primary); }
+    .notif-dot {
+      position: absolute;
+      top: 7px; right: 7px;
+      width: 7px; height: 7px;
+      background: var(--accent);
+      border-radius: 50%;
+    }
+    .avatar {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), #9B8FFF);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    /* ══════════════════════════════════════════
+       MAIN CONTENT
+    ══════════════════════════════════════════ */
+    .main-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 30px 20px 0;
+    }
+    .greeting { margin-bottom: 26px; }
+    .greeting h1 { font-size: 22px; font-weight: 600; letter-spacing: -0.3px; }
+    .greeting p  { font-size: 13px; color: var(--muted); margin-top: 5px; }
+    .greeting p span { color: var(--accent); font-weight: 600; }
+
+    /* ══════════════════════════════════════════
+       BENTO GRID
+    ══════════════════════════════════════════ */
+    .bento {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+    }
+    .col-full { grid-column: 1 / -1; }
+
+    /* ══════════════════════════════════════════
+       CARD BASE
+    ══════════════════════════════════════════ */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 20px;
+      transition: border-color 0.25s, transform 0.25s;
+    }
+    .card:hover { border-color: var(--primary); }
+
+    .card-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.09em;
+      color: var(--muted);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+    }
+    .dot-primary { background: var(--primary); }
+    .dot-accent  { background: var(--accent); }
+    .dot-purple  { background: #A5A0FF; }
+    .dot-amber   { background: #F59E0B; }
+
+    /* ══════════════════════════════════════════
+       SECTION 1 — WALLET
+    ══════════════════════════════════════════ */
+    .wallet-balance {
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: -1.5px;
+      margin-bottom: 4px;
+    }
+    .wallet-sub {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+    .wallet-sub span { color: var(--accent); font-weight: 600; }
+
+    .quick-actions {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+    .qa-btn {
+      flex: 1;
+      min-width: 70px;
+      padding: 10px 6px;
+      border-radius: var(--r-sm);
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+      font-size: 12px;
+      text-align: center;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+    .qa-btn:hover { border-color: var(--primary); background: rgba(99,91,255,0.1); }
+    .qa-btn.pay-btn {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff;
+      box-shadow: 0 0 16px var(--glow);
+    }
+    .qa-btn .qa-ico { font-size: 18px; }
+
+    .txn-list { display: flex; flex-direction: column; gap: 8px; }
+    .txn-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      background: var(--surface2);
+      border-radius: var(--r-sm);
+      transition: background 0.2s;
+    }
+    .txn-row:hover { background: rgba(99,91,255,0.07); }
+    .txn-ico {
+      width: 36px; height: 36px;
+      border-radius: 9px;
+      font-size: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .txn-ico.food   { background: rgba(245,158,11,0.12); }
+    .txn-ico.travel { background: rgba(99,91,255,0.12); }
+    .txn-ico.invest { background: rgba(0,255,194,0.10); }
+    .txn-info { flex: 1; }
+    .txn-name { font-size: 13px; font-weight: 500; }
+    .txn-time { font-size: 11px; color: var(--muted); margin-top: 1px; }
+    .txn-amt  { font-size: 14px; font-weight: 600; }
+    .neg { color: #F87171; }
+    .pos { color: var(--accent); }
+
+    /* ══════════════════════════════════════════
+       SECTION 2 — ACADEMY
+    ══════════════════════════════════════════ */
+    .course-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 14px; }
+    .course-item {
+      padding: 14px;
+      background: var(--surface2);
+      border-radius: 12px;
+      border-left: 3px solid var(--primary);
+      transition: border-left-color 0.2s;
+    }
+    .course-item.active  { border-left-color: var(--accent); }
+    .course-item.locked  { border-left-color: var(--muted); opacity: 0.7; }
+    .course-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      gap: 8px;
+    }
+    .course-title { font-size: 13px; font-weight: 500; line-height: 1.4; flex: 1; }
+    .badge {
+      font-size: 10px;
+      padding: 2px 9px;
+      border-radius: 20px;
+      font-weight: 600;
+      flex-shrink: 0;
+    }
+    .badge-green  { background: rgba(0,255,194,0.1);  color: var(--accent); }
+    .badge-purple { background: rgba(99,91,255,0.12); color: #A5A0FF; }
+    .badge-amber  { background: rgba(245,158,11,0.1); color: #F59E0B; }
+
+    .prog-bg {
+      width: 100%;
+      height: 5px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .prog-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.7s ease;
+    }
+    .prog-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 5px;
+    }
+
+    .view-all-btn {
+      width: 100%;
+      padding: 10px;
+      background: rgba(99,91,255,0.08);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+    .view-all-btn:hover { background: rgba(99,91,255,0.16); }
+
+    /* ══════════════════════════════════════════
+       SECTION 3 — COPILOT
+    ══════════════════════════════════════════ */
+    .insights-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .insight-chip {
+      padding: 13px;
+      background: var(--surface2);
+      border-radius: 12px;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .insight-chip:hover { border-color: var(--primary); }
+    .insight-emoji { font-size: 22px; margin-bottom: 6px; display: block; }
+    .insight-val   { font-size: 18px; font-weight: 700; }
+    .insight-desc  { font-size: 11px; color: var(--muted); margin-top: 3px; line-height: 1.4; }
+    .ins-tag {
+      display: inline-block;
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      margin-top: 6px;
+      font-weight: 600;
+    }
+    .tag-warn { background: rgba(245,158,11,0.12); color: #F59E0B; }
+    .tag-good { background: rgba(0,255,194,0.10);  color: var(--accent); }
+    .tag-info { background: rgba(99,91,255,0.12);  color: #A5A0FF; }
+
+    .copilot-row {
+      display: flex;
+      gap: 8px;
+    }
+    .copilot-input {
+      flex: 1;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      padding: 10px 14px;
+      color: var(--text);
+      font-size: 13px;
+      font-family: inherit;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .copilot-input:focus { border-color: var(--primary); }
+    .copilot-input::placeholder { color: var(--muted); }
+    .copilot-send {
+      background: var(--primary);
+      border: none;
+      border-radius: var(--r-sm);
+      padding: 10px 18px;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: 0 0 12px var(--glow);
+      transition: opacity 0.2s;
+    }
+    .copilot-send:hover { opacity: 0.88; }
+
+    /* ══════════════════════════════════════════
+       SECTION 4 — WEALTH CHART
+    ══════════════════════════════════════════ */
+    .chart-container { width: 100%; height: 200px; }
+
+    /* ══════════════════════════════════════════
+       SECTION 5 — GOALS & REWARDS
+    ══════════════════════════════════════════ */
+    .xp-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 7px;
+    }
+    .xp-header span:last-child { color: var(--accent); font-weight: 600; }
+    .xp-bg {
+      width: 100%;
+      height: 9px;
+      background: rgba(255,255,255,0.07);
+      border-radius: 5px;
+      overflow: hidden;
+      margin-bottom: 18px;
+    }
+    .xp-fill {
+      height: 100%;
+      width: 78%;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+      border-radius: 5px;
+    }
+    .divider { height: 1px; background: var(--border); margin-bottom: 16px; }
+
+    .badges-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      gap: 10px;
+    }
+    .badge-card {
+      padding: 16px 12px;
+      background: var(--surface2);
+      border-radius: 12px;
+      text-align: center;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: all 0.22s;
+    }
+    .badge-card.earned {
+      border-color: rgba(0,255,194,0.2);
+      background: rgba(0,255,194,0.04);
+    }
+    .badge-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .badge-icon { font-size: 30px; margin-bottom: 8px; display: block; }
+    .badge-name { font-size: 12px; font-weight: 600; }
+    .badge-pts  { font-size: 11px; color: var(--accent); margin-top: 3px; }
+    .badge-lock { font-size: 11px; color: var(--muted);  margin-top: 3px; }
+    .badge-card.locked-badge .badge-icon { filter: grayscale(1); opacity: 0.4; }
+
+    /* ══════════════════════════════════════════
+       PRO SECTION
+    ══════════════════════════════════════════ */
+    .pro-section { display: none; }
+    .pro-section.visible { display: block; animation: fadeIn 0.35s ease; }
+    .pro-label-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: rgba(0,255,194,0.08);
+      border: 1px solid rgba(0,255,194,0.25);
+      color: var(--accent);
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 20px;
+      margin-bottom: 14px;
+    }
+    .ticker-scroll {
+      overflow-x: auto;
+      padding-bottom: 6px;
+      scrollbar-width: none;
+      margin-bottom: 14px;
+    }
+    .ticker-scroll::-webkit-scrollbar { display: none; }
+    .ticker-row { display: flex; gap: 10px; min-width: max-content; }
+    .ticker-chip {
+      padding: 10px 16px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      min-width: 100px;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+    .ticker-chip:hover { border-color: var(--accent); }
+    .ticker-name  { font-size: 11px; color: var(--muted); margin-bottom: 4px; }
+    .ticker-price { font-size: 15px; font-weight: 700; }
+    .ticker-up    { font-size: 11px; color: var(--accent); margin-top: 3px; }
+    .ticker-down  { font-size: 11px; color: #F87171; margin-top: 3px; }
+    .pro-actions  { display: flex; gap: 10px; flex-wrap: wrap; }
+    .pro-btn-green {
+      padding: 10px 20px;
+      background: rgba(0,255,194,0.08);
+      border: 1px solid rgba(0,255,194,0.25);
+      border-radius: var(--r-sm);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 600;
+      transition: background 0.2s;
+    }
+    .pro-btn-green:hover { background: rgba(0,255,194,0.14); }
+    .pro-btn-purple {
+      padding: 10px 20px;
+      background: rgba(99,91,255,0.08);
+      border: 1px solid var(--border);
+      border-radius: var(--r-sm);
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: 600;
+    }
+    .pro-btn-ghost {
+      padding: 10px 20px;
+      background: transparent;
+      border: 1px dashed var(--border);
+      border-radius: var(--r-sm);
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    /* ══════════════════════════════════════════
+       FOOTER
+    ══════════════════════════════════════════ */
+    footer {
+      background: #0A0F1E;
+      border-top: 1px solid rgba(99,91,255,0.14);
+      margin-top: 60px;
+    }
+
+    /* Founders */
+    .founders-wrap { max-width: 1100px; margin: 0 auto; padding: 56px 24px 40px; }
+    .section-eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--accent);
+      text-align: center;
+      display: block;
+      margin-bottom: 8px;
+    }
+    .section-heading {
+      font-size: 28px;
+      font-weight: 700;
+      text-align: center;
+      letter-spacing: -0.5px;
+      margin-bottom: 10px;
+    }
+    .section-sub {
+      font-size: 14px;
+      color: var(--muted);
+      text-align: center;
+      max-width: 460px;
+      margin: 0 auto 36px;
+      line-height: 1.65;
+    }
+    .founders-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 18px;
+    }
+    .founder-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      padding: 26px;
+      text-align: center;
+      transition: border-color 0.25s, transform 0.25s;
+    }
+    .founder-card:hover { border-color: var(--primary); transform: translateY(-4px); }
+    .founder-avatar {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 700;
+      color: #fff;
+      margin: 0 auto 14px;
+    }
+    .founder-name { font-size: 16px; font-weight: 700; }
+    .founder-role { font-size: 12px; color: var(--accent); font-weight: 600; margin-top: 4px; }
+    .founder-bio  { font-size: 13px; color: var(--muted); margin-top: 10px; line-height: 1.65; }
+    .founder-socials {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .social-ico {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: rgba(99,91,255,0.1);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      color: var(--muted);
+      transition: all 0.2s;
+    }
+    .social-ico:hover { background: var(--primary); color: #fff; }
+
+    /* App Download Banner */
+    .app-banner {
+      background: linear-gradient(135deg, rgba(99,91,255,0.1) 0%, rgba(0,255,194,0.05) 100%);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 36px 24px;
+    }
+    .app-banner-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+    .app-banner h3 { font-size: 20px; font-weight: 700; }
+    .app-banner p  { font-size: 14px; color: var(--muted); margin-top: 4px; }
+    .store-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+    .store-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 20px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      min-width: 165px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .store-btn:hover { border-color: var(--primary); transform: scale(1.02); }
+    .store-ico  { font-size: 28px; }
+    .store-sub  { font-size: 10px; color: var(--muted); }
+    .store-name { font-size: 15px; font-weight: 700; }
+    .store-rate { font-size: 10px; color: var(--accent); margin-top: 1px; }
+
+    /* Footer Main */
+    .footer-main { max-width: 1100px; margin: 0 auto; padding: 48px 24px 28px; }
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.6fr repeat(4, 1fr);
+      gap: 32px;
+      margin-bottom: 44px;
+    }
+    @media (max-width: 800px) {
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 500px) {
+      .footer-grid { grid-template-columns: 1fr; }
+    }
+    .footer-brand-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .footer-brand-logo .logo-icon { width: 32px; height: 32px; border-radius: 9px; }
+    .footer-brand p {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 16px;
+    }
+    .footer-socials { display: flex; gap: 8px; }
+    .f-social {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: rgba(99,91,255,0.08);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      transition: all 0.2s;
+    }
+    .f-social:hover { background: var(--primary); }
+    .footer-col-title {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text);
+      margin-bottom: 14px;
+    }
+    .footer-col li { margin-bottom: 9px; }
+    .footer-col a {
+      font-size: 13px;
+      color: var(--muted);
+      transition: color 0.2s;
+    }
+    .footer-col a:hover { color: var(--accent); }
+
+    .contact-row {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      padding-bottom: 22px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 22px;
+    }
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .contact-item span.ico { color: var(--primary); }
+
+    .footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .footer-bottom p {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* ══════════════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════════════ */
+    @media (max-width: 600px) {
+      .topbar { padding: 12px 16px; }
+      .main-wrap { padding: 20px 14px 0; }
+      .bento { grid-template-columns: 1fr; }
+      .insights-grid { grid-template-columns: 1fr; }
+      .badges-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- ══════════════════════════════════════════
+       TOPBAR
+  ══════════════════════════════════════════ -->
+  <header class="topbar">
+    <div class="logo">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+        </svg>
+      </div>
+      <span class="logo-text">Finsight<span>AI</span></span>
+    </div>
+
+    <div class="topbar-controls">
+      <!-- Language Toggle -->
+      <div class="lang-toggle">
+        <button class="lang-btn active" id="btn-en" onclick="setLang('en')">EN</button>
+        <button class="lang-btn"        id="btn-hi" onclick="setLang('hi')">हि</button>
+      </div>
+
+      <!-- Mode Switcher -->
+      <div class="mode-switcher">
+        <button class="mode-btn active-basic" id="btn-basic" onclick="setMode('basic')">🎓 Learner</button>
+        <button class="mode-btn"              id="btn-pro"   onclick="setMode('pro')">📈 Pro Trader</button>
+      </div>
+
+      <!-- Notification -->
+      <div class="icon-btn">
+        <svg width="15" height="15" fill="none" stroke="#94A3B8" stroke-width="2" viewBox="0 0 24 24">
+          <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+          <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+        </svg>
+        <div class="notif-dot"></div>
+      </div>
+
+      <!-- Avatar -->
+      <div class="avatar">RS</div>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════════
+       MAIN CONTENT
+  ══════════════════════════════════════════ -->
+  <main class="main-wrap">
+
+    <!-- Greeting -->
+    <div class="greeting anim-1">
+      <h1 id="greet-text">Good evening, Rahul 👋</h1>
+      <p id="greet-sub">Your wealth score: <span>742 pts</span> — Up 12 this week</p>
+    </div>
+
+    <!-- BENTO GRID -->
+    <div class="bento">
+
+      <!-- ── SECTION 1: WALLET ── -->
+      <div class="card anim-2">
+        <div class="card-label">
+          <span class="dot dot-primary"></span>
+          <span id="lbl-wallet">Wallet &amp; Quick Pay</span>
+        </div>
+        <div class="wallet-balance">₹1,24,580</div>
+        <div class="wallet-sub" id="wallet-sub">Available Balance <span>↑ +2.4% this month</span></div>
+
+        <div class="quick-actions">
+          <button class="qa-btn pay-btn"><span class="qa-ico">⚡</span><span id="qa-pay">Pay</span></button>
+          <button class="qa-btn"><span class="qa-ico">➕</span><span id="qa-add">Add</span></button>
+          <button class="qa-btn"><span class="qa-ico">📄</span><span id="qa-bills">Bills</span></button>
+          <button class="qa-btn"><span class="qa-ico">📊</span><span id="qa-invest">Invest</span></button>
+        </div>
+
+        <div class="txn-list">
+          <div class="txn-row">
+            <div class="txn-ico food">🍕</div>
+            <div class="txn-info">
+              <div class="txn-name">Zomato</div>
+              <div class="txn-time" id="txn1-time">Today, 1:30 PM</div>
+            </div>
+            <div class="txn-amt neg">−₹340</div>
+          </div>
+          <div class="txn-row">
+            <div class="txn-ico travel">🚕</div>
+            <div class="txn-info">
+              <div class="txn-name">Ola Cab</div>
+              <div class="txn-time" id="txn2-time">Yesterday</div>
+            </div>
+            <div class="txn-amt neg">−₹180</div>
+          </div>
+          <div class="txn-row">
+            <div class="txn-ico invest">💰</div>
+            <div class="txn-info">
+              <div class="txn-name">SIP Return</div>
+              <div class="txn-time" id="txn3-time">Apr 15</div>
+            </div>
+            <div class="txn-amt pos">+₹2,100</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SECTION 2: ACADEMY ── -->
+      <div class="card anim-3">
+        <div class="card-label">
+          <span class="dot dot-accent"></span>
+          <span id="lbl-academy">Skill-Up Academy</span>
+        </div>
+
+        <div class="course-list">
+          <!-- Course 1 -->
+          <div class="course-item active">
+            <div class="course-top">
+              <div class="course-title" id="c1-title">Basics of Options Trading</div>
+              <span class="badge badge-green" id="c1-badge">In Progress</span>
+            </div>
+            <div class="prog-bg"><div class="prog-fill" style="width:65%;background:var(--accent);"></div></div>
+            <div class="prog-labels"><span id="c1-mod">Module 7/11</span><span style="color:var(--accent);">65%</span></div>
+          </div>
+          <!-- Course 2 -->
+          <div class="course-item">
+            <div class="course-top">
+              <div class="course-title" id="c2-title">Budgeting 101: Zero-Based</div>
+              <span class="badge badge-purple" id="c2-badge">New</span>
+            </div>
+            <div class="prog-bg"><div class="prog-fill" style="width:20%;background:var(--primary);"></div></div>
+            <div class="prog-labels"><span id="c2-mod">Module 2/10</span><span>20%</span></div>
+          </div>
+          <!-- Course 3 -->
+          <div class="course-item locked">
+            <div class="course-top">
+              <div class="course-title" id="c3-title">Mutual Funds Masterclass</div>
+              <span class="badge badge-amber" id="c3-badge">Locked</span>
+            </div>
+            <div class="prog-bg"><div class="prog-fill" style="width:0%;background:var(--muted);"></div></div>
+            <div class="prog-labels"><span id="c3-mod">Complete prev. to unlock</span><span>0%</span></div>
+          </div>
+        </div>
+        <button class="view-all-btn" id="btn-view-all">View all courses →</button>
+      </div>
+
+      <!-- ── SECTION 3: COPILOT ── -->
+      <div class="card anim-4">
+        <div class="card-label">
+          <span class="dot dot-purple"></span>
+          <span id="lbl-copilot">AI Financial Co-Pilot</span>
+        </div>
+
+        <div class="insights-grid">
+          <div class="insight-chip">
+            <span class="insight-emoji">🍔</span>
+            <div class="insight-val">+15%</div>
+            <div class="insight-desc" id="ins1-desc">Food spend vs last week</div>
+            <span class="ins-tag tag-warn" id="ins1-tag">Alert</span>
+          </div>
+          <div class="insight-chip">
+            <span class="insight-emoji">💾</span>
+            <div class="insight-val">₹8.2K</div>
+            <div class="insight-desc" id="ins2-desc">Saved this month</div>
+            <span class="ins-tag tag-good" id="ins2-tag">On track</span>
+          </div>
+          <div class="insight-chip">
+            <span class="insight-emoji">📈</span>
+            <div class="insight-val">+11.2%</div>
+            <div class="insight-desc" id="ins3-desc">SIP returns YTD</div>
+            <span class="ins-tag tag-good" id="ins3-tag">Strong</span>
+          </div>
+          <div class="insight-chip">
+            <span class="insight-emoji">📅</span>
+            <div class="insight-val">3 due</div>
+            <div class="insight-desc" id="ins4-desc">Bills due in 7 days</div>
+            <span class="ins-tag tag-info" id="ins4-tag">Action needed</span>
+          </div>
+        </div>
+
+        <div class="copilot-row">
+          <input class="copilot-input" id="copilot-q" placeholder="Ask Co-Pilot anything..." />
+          <button class="copilot-send" onclick="askCopilot()">Ask ↗</button>
+        </div>
+      </div>
+
+      <!-- ── SECTION 4: WEALTH CHART ── -->
+      <div class="card col-full anim-5">
+        <div class="card-label">
+          <span class="dot dot-accent"></span>
+          <span id="lbl-wealth">Wealth Growth</span>
+        </div>
+        <div class="chart-container">
+          <canvas id="wealthChart"></canvas>
+        </div>
+      </div>
+
+      <!-- ── SECTION 5: GOALS & REWARDS ── -->
+      <div class="card col-full anim-6">
+        <div class="card-label">
+          <span class="dot dot-amber"></span>
+          <span id="lbl-goals">Goals &amp; Rewards</span>
+        </div>
+
+        <div class="xp-header">
+          <span id="xp-level">XP Progress — Level 7 Wealth Builder</span>
+          <span>2,340 / 3,000 XP</span>
+        </div>
+        <div class="xp-bg"><div class="xp-fill"></div></div>
+        <div class="divider"></div>
+
+        <div class="badges-grid">
+          <div class="badge-card earned">
+            <span class="badge-icon">🏆</span>
+            <div class="badge-name" id="b1-name">First SIP</div>
+            <div class="badge-pts">+200 XP earned</div>
+          </div>
+          <div class="badge-card earned">
+            <span class="badge-icon">📚</span>
+            <div class="badge-name" id="b2-name">Course Graduate</div>
+            <div class="badge-pts">+350 XP earned</div>
+          </div>
+          <div class="badge-card earned">
+            <span class="badge-icon">💡</span>
+            <div class="badge-name" id="b3-name">Budget Master</div>
+            <div class="badge-pts">+150 XP earned</div>
+          </div>
+          <div class="badge-card locked-badge">
+            <span class="badge-icon">🔥</span>
+            <div class="badge-name" id="b4-name">Streak Saver</div>
+            <div class="badge-lock" id="b4-lock">Save 5 days in a row</div>
+          </div>
+          <div class="badge-card locked-badge">
+            <span class="badge-icon">📊</span>
+            <div class="badge-name" id="b5-name">Options Guru</div>
+            <div class="badge-lock" id="b5-lock">Complete Options course</div>
+          </div>
+          <div class="badge-card locked-badge">
+            <span class="badge-icon">💎</span>
+            <div class="badge-name" id="b6-name">₹1L Club</div>
+            <div class="badge-lock" id="b6-lock">Invest ₹1 Lakh total</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── PRO TRADER SECTION (hidden by default) ── -->
+      <div class="card col-full pro-section" id="pro-section">
+        <div class="card-label">
+          <span class="dot dot-accent"></span>
+          <span id="lbl-pro">Pro Trader Dashboard</span>
+        </div>
+        <div class="pro-label-badge">✦ Pro Mode Active</div>
+
+        <div class="ticker-scroll">
+          <div class="ticker-row">
+            <div class="ticker-chip"><div class="ticker-name">NIFTY 50</div><div class="ticker-price">22,513</div><div class="ticker-up">↑ +0.84%</div></div>
+            <div class="ticker-chip"><div class="ticker-name">SENSEX</div><div class="ticker-price">74,119</div><div class="ticker-up">↑ +0.71%</div></div>
+            <div class="ticker-chip"><div class="ticker-name">RELIANCE</div><div class="ticker-price">₹2,941</div><div class="ticker-down">↓ −0.32%</div></div>
+            <div class="ticker-chip"><div class="ticker-name">INFY</div><div class="ticker-price">₹1,478</div><div class="ticker-up">↑ +1.12%</div></div>
+            <div class="ticker-chip"><div class="ticker-name">TCS</div><div class="ticker-price">₹3,820</div><div class="ticker-up">↑ +0.55%</div></div>
+            <div class="ticker-chip"><div class="ticker-name">HDFC</div><div class="ticker-price">₹1,630</div><div class="ticker-down">↓ −0.18%</div></div>
+            <div class="ticker-chip"><div class="ticker-name">GOLD</div><div class="ticker-price">₹71,440</div><div class="ticker-up">↑ +0.40%</div></div>
+            <div class="ticker-chip"><div class="ticker-name">BTC/INR</div><div class="ticker-price">₹68.2L</div><div class="ticker-up">↑ +2.10%</div></div>
+          </div>
+        </div>
+
+        <div class="pro-actions">
+          <button class="pro-btn-green">📊 Open Options Chain →</button>
+          <button class="pro-btn-purple">⭐ My Watchlist</button>
+          <button class="pro-btn-ghost">＋ Add Ticker</button>
+        </div>
+      </div>
+
+    </div><!-- /bento -->
+  </main>
+
+  <!-- ══════════════════════════════════════════
+       FOOTER
+  ══════════════════════════════════════════ -->
+  <footer>
+
+    <!-- Founders Section -->
+    <div class="founders-wrap">
+      <span class="section-eyebrow">The People Behind</span>
+      <h2 class="section-heading">Meet Our Founders</h2>
+      <p class="section-sub">
+        Built by people who believe every Indian deserves world-class financial tools
+        and education — in one place.
+      </p>
+
+      <div class="founders-grid">
+        <!-- Founder 1 -->
+        <div class="founder-card">
+          <div class="founder-avatar" style="background:linear-gradient(135deg,#635BFF,#9B8FFF);">RS</div>
+          <div class="founder-name">Rahul Sharma</div>
+          <div class="founder-role">Founder &amp; CEO</div>
+          <div class="founder-bio">Ex-Goldman Sachs. IIT Bombay alumnus. 12 years building FinTech products trusted by millions.</div>
+          <div class="founder-socials">
+            <a class="social-ico" href="#" title="Twitter">𝕏</a>
+            <a class="social-ico" href="#" title="LinkedIn">in</a>
+            <a class="social-ico" href="#" title="GitHub">⌥</a>
+          </div>
+        </div>
+        <!-- Co-Founder 2 -->
+        <div class="founder-card">
+          <div class="founder-avatar" style="background:linear-gradient(135deg,#00FFC2,#00C9A7);color:#0F172A;">PG</div>
+          <div class="founder-name">Priya Gupta</div>
+          <div class="founder-role">Co-Founder &amp; CTO</div>
+          <div class="founder-bio">Ex-Google. IISc AI &amp; ML researcher. Built scalable infrastructure serving 10M+ concurrent users.</div>
+          <div class="founder-socials">
+            <a class="social-ico" href="#" title="Twitter">𝕏</a>
+            <a class="social-ico" href="#" title="LinkedIn">in</a>
+            <a class="social-ico" href="#" title="GitHub">⌥</a>
+          </div>
+        </div>
+        <!-- Co-Founder 3 -->
+        <div class="founder-card">
+          <div class="founder-avatar" style="background:linear-gradient(135deg,#F59E0B,#EF4444);">AK</div>
+          <div class="founder-name">Arjun Kapoor</div>
+          <div class="founder-role">Co-Founder &amp; CPO</div>
+          <div class="founder-bio">Serial EdTech entrepreneur. Previously at BYJU'S. UX-obsessed product builder with 8 years experience.</div>
+          <div class="founder-socials">
+            <a class="social-ico" href="#" title="Twitter">𝕏</a>
+            <a class="social-ico" href="#" title="LinkedIn">in</a>
+            <a class="social-ico" href="#" title="GitHub">⌥</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- App Download Banner -->
+    <div class="app-banner">
+      <div class="app-banner-inner">
+        <div>
+          <h3>Take FinsightAI with you</h3>
+          <p>Manage money, learn skills, and track your portfolio — from your pocket.</p>
+        </div>
+        <div class="store-btns">
+          <a class="store-btn" href="#">
+            <span class="store-ico">🍎</span>
+            <div>
+              <div class="store-sub">Download on the</div>
+              <div class="store-name">App Store</div>
+              <div class="store-rate">4.8 ★ · 50K+ ratings</div>
+            </div>
+          </a>
+          <a class="store-btn" href="#">
+            <span class="store-ico">▶</span>
+            <div>
+              <div class="store-sub">Get it on</div>
+              <div class="store-name">Google Play</div>
+              <div class="store-rate">4.7 ★ · 1L+ ratings</div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer Links -->
+    <div class="footer-main">
+      <div class="footer-grid">
+        <!-- Brand -->
+        <div class="footer-brand">
+          <div class="footer-brand-logo">
+            <div class="logo-icon" style="width:32px;height:32px;border-radius:9px;">
+              <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+              </svg>
+            </div>
+            <span style="font-size:16px;font-weight:700;">Finsight<span style="color:var(--accent);">AI</span></span>
+          </div>
+          <p>India's most trusted platform for smart money management and financial education — all in one place.</p>
+          <div class="footer-socials">
+            <a class="f-social" href="#">𝕏</a>
+            <a class="f-social" href="#">in</a>
+            <a class="f-social" href="#">⌥</a>
+            <a class="f-social" href="#">📷</a>
+          </div>
+        </div>
+
+        <!-- Product -->
+        <div class="footer-col">
+          <div class="footer-col-title">Product</div>
+          <ul>
+            <li><a href="#">Features</a></li>
+            <li><a href="#">Pricing</a></li>
+            <li><a href="#">Security</a></li>
+            <li><a href="#">Roadmap</a></li>
+            <li><a href="#">Changelog</a></li>
+          </ul>
+        </div>
+
+        <!-- Learn -->
+        <div class="footer-col">
+          <div class="footer-col-title">Learn</div>
+          <ul>
+            <li><a href="#">Blog</a></li>
+            <li><a href="#">Webinars</a></li>
+            <li><a href="#">Courses</a></li>
+            <li><a href="#">Community</a></li>
+            <li><a href="#">Help Center</a></li>
+          </ul>
+        </div>
+
+        <!-- Company -->
+        <div class="footer-col">
+          <div class="footer-col-title">Company</div>
+          <ul>
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Careers</a></li>
+            <li><a href="#">Press</a></li>
+            <li><a href="#">Partners</a></li>
+            <li><a href="#">Contact</a></li>
+          </ul>
+        </div>
+
+        <!-- Legal -->
+        <div class="footer-col">
+          <div class="footer-col-title">Legal</div>
+          <ul>
+            <li><a href="#">Privacy Policy</a></li>
+            <li><a href="#">Terms of Service</a></li>
+            <li><a href="#">Cookie Policy</a></li>
+            <li><a href="#">Disclosures</a></li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Contact Row -->
+      <div class="contact-row">
+        <div class="contact-item"><span class="ico">✉</span> hello@finsightai.in</div>
+        <div class="contact-item"><span class="ico">📞</span> +91 98765 43210</div>
+        <div class="contact-item"><span class="ico">📍</span> Bengaluru, Karnataka · India 🇮🇳</div>
+      </div>
+
+      <!-- Bottom Bar -->
+      <div class="footer-bottom">
+        <p>© <span id="year"></span> FinsightAI Technologies Pvt. Ltd. · All rights reserved.</p>
+        <p>SEBI Registered Investment Advisor · AMFI ARN-XXXXXX · CIN: U74999KA2024PTC123456</p>
+      </div>
+    </div>
+
+  </footer>
+
+  <!-- ══════════════════════════════════════════
+       JAVASCRIPT
+  ══════════════════════════════════════════ -->
+  <script>
+    /* ── Year ── */
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    /* ── Greeting ── */
+    (function() {
+      const h = new Date().getHours();
+      const part = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+      document.getElementById('greet-text').textContent = `${part}, Rahul 👋`;
+    })();
+
+    /* ══════════════════════════════════════════
+       LANGUAGE TOGGLE
+    ══════════════════════════════════════════ */
+    const copy = {
+      en: {
+        greet: 'Rahul', greetSub: 'Your wealth score:',
+        wallet: 'Wallet & Quick Pay', available: 'Available Balance',
+        pay: 'Pay', add: 'Add', bills: 'Bills', invest: 'Invest',
+        txn1t: 'Today, 1:30 PM', txn2t: 'Yesterday', txn3t: 'Apr 15',
+        academy: 'Skill-Up Academy',
+        c1: 'Basics of Options Trading', c1b: 'In Progress', c1m: 'Module 7/11',
+        c2: 'Budgeting 101: Zero-Based', c2b: 'New', c2m: 'Module 2/10',
+        c3: 'Mutual Funds Masterclass', c3b: 'Locked', c3m: 'Complete prev. to unlock',
+        viewAll: 'View all courses →',
+        copilot: 'AI Financial Co-Pilot', placeholder: 'Ask Co-Pilot anything...',
+        ins1d: 'Food spend vs last week',  ins1t: 'Alert',
+        ins2d: 'Saved this month',         ins2t: 'On track',
+        ins3d: 'SIP returns YTD',          ins3t: 'Strong',
+        ins4d: 'Bills due in 7 days',      ins4t: 'Action needed',
+        wealth: 'Wealth Growth',
+        goals: 'Goals & Rewards', xpLevel: 'XP Progress — Level 7 Wealth Builder',
+        b1: 'First SIP',       b2: 'Course Graduate', b3: 'Budget Master',
+        b4: 'Streak Saver',    b4l: 'Save 5 days in a row',
+        b5: 'Options Guru',    b5l: 'Complete Options course',
+        b6: '₹1L Club',        b6l: 'Invest ₹1 Lakh total',
+        pro: 'Pro Trader Dashboard',
+        modeBasic: '🎓 Learner', modePro: '📈 Pro Trader',
+      },
+      hi: {
+        greet: 'राहुल', greetSub: 'आपका वेल्थ स्कोर:',
+        wallet: 'वॉलेट और क्विक पे', available: 'उपलब्ध शेष',
+        pay: 'पेमेंट', add: 'जोड़ें', bills: 'बिल', invest: 'निवेश',
+        txn1t: 'आज, 1:30 PM', txn2t: 'कल', txn3t: '15 अप्रैल',
+        academy: 'स्किल-अप अकैडमी',
+        c1: 'ऑप्शंस ट्रेडिंग की मूल बातें', c1b: 'जारी है', c1m: 'मॉड्यूल 7/11',
+        c2: 'बजटिंग 101: जीरो-बेस्ड',       c2b: 'नया',    c2m: 'मॉड्यूल 2/10',
+        c3: 'म्यूचुअल फंड मास्टरक्लास',      c3b: 'लॉक्ड', c3m: 'पहले पूरा करें',
+        viewAll: 'सभी कोर्स देखें →',
+        copilot: 'AI फाइनेंशियल को-पायलट', placeholder: 'को-पायलट से कुछ भी पूछें...',
+        ins1d: 'पिछले हफ्ते से खाने का खर्च', ins1t: 'अलर्ट',
+        ins2d: 'इस महीने बचाई गई राशि',       ins2t: 'ट्रैक पर',
+        ins3d: 'एसआईपी रिटर्न (YTD)',          ins3t: 'मजबूत',
+        ins4d: '7 दिनों में देय बिल',           ins4t: 'कार्रवाई जरूरी',
+        wealth: 'संपत्ति वृद्धि',
+        goals: 'लक्ष्य और पुरस्कार', xpLevel: 'XP प्रगति — लेवल 7 वेल्थ बिल्डर',
+        b1: 'पहली SIP',         b2: 'कोर्स ग्रेजुएट', b3: 'बजट मास्टर',
+        b4: 'स्ट्रीक सेवर',    b4l: '5 दिन लगातार बचाएं',
+        b5: 'ऑप्शंस गुरु',     b5l: 'ऑप्शंस कोर्स पूरा करें',
+        b6: '₹1 लाख क्लब',     b6l: '₹1 लाख का निवेश करें',
+        pro: 'प्रो ट्रेडर डैशबोर्ड',
+        modeBasic: '🎓 शिक्षार्थी', modePro: '📈 प्रो ट्रेडर',
+      }
+    };
+
+    let currentLang = 'en';
+
+    function setLang(l) {
+      currentLang = l;
+      const c = copy[l];
+      const h = new Date().getHours();
+      const part = l === 'en'
+        ? (h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening')
+        : (h < 12 ? 'शुभ प्रभात'   : h < 17 ? 'शुभ दोपहर'      : 'शुभ संध्या');
+
+      document.getElementById('greet-text').textContent = `${part}, ${c.greet} 👋`;
+      document.getElementById('greet-sub').innerHTML = `${c.greetSub} <span>742 pts</span> — Up 12 this week`;
+      document.getElementById('lbl-wallet').textContent = c.wallet;
+      document.getElementById('wallet-sub').innerHTML = `${c.available} <span>↑ +2.4% this month</span>`;
+      document.getElementById('qa-pay').textContent = c.pay;
+      document.getElementById('qa-add').textContent = c.add;
+      document.getElementById('qa-bills').textContent = c.bills;
+      document.getElementById('qa-invest').textContent = c.invest;
+      document.getElementById('txn1-time').textContent = c.txn1t;
+      document.getElementById('txn2-time').textContent = c.txn2t;
+      document.getElementById('txn3-time').textContent = c.txn3t;
+      document.getElementById('lbl-academy').textContent = c.academy;
+      document.getElementById('c1-title').textContent = c.c1;
+      document.getElementById('c1-badge').textContent = c.c1b;
+      document.getElementById('c1-mod').textContent   = c.c1m;
+      document.getElementById('c2-title').textContent = c.c2;
+      document.getElementById('c2-badge').textContent = c.c2b;
+      document.getElementById('c2-mod').textContent   = c.c2m;
+      document.getElementById('c3-title').textContent = c.c3;
+      document.getElementById('c3-badge').textContent = c.c3b;
+      document.getElementById('c3-mod').textContent   = c.c3m;
+      document.getElementById('btn-view-all').textContent = c.viewAll;
+      document.getElementById('lbl-copilot').textContent  = c.copilot;
+      document.getElementById('copilot-q').placeholder    = c.placeholder;
+      document.getElementById('ins1-desc').textContent = c.ins1d;
+      document.getElementById('ins1-tag').textContent  = c.ins1t;
+      document.getElementById('ins2-desc').textContent = c.ins2d;
+      document.getElementById('ins2-tag').textContent  = c.ins2t;
+      document.getElementById('ins3-desc').textContent = c.ins3d;
+      document.getElementById('ins3-tag').textContent  = c.ins3t;
+      document.getElementById('ins4-desc').textContent = c.ins4d;
+      document.getElementById('ins4-tag').textContent  = c.ins4t;
+      document.getElementById('lbl-wealth').textContent  = c.wealth;
+      document.getElementById('lbl-goals').textContent   = c.goals;
+      document.getElementById('xp-level').textContent    = c.xpLevel;
+      document.getElementById('b1-name').textContent = c.b1;
+      document.getElementById('b2-name').textContent = c.b2;
+      document.getElementById('b3-name').textContent = c.b3;
+      document.getElementById('b4-name').textContent = c.b4;
+      document.getElementById('b4-lock').textContent = c.b4l;
+      document.getElementById('b5-name').textContent = c.b5;
+      document.getElementById('b5-lock').textContent = c.b5l;
+      document.getElementById('b6-name').textContent = c.b6;
+      document.getElementById('b6-lock').textContent = c.b6l;
+      document.getElementById('lbl-pro').textContent = c.pro;
+      document.getElementById('btn-basic').textContent = c.modeBasic;
+      document.getElementById('btn-pro').textContent   = c.modePro;
+
+      document.getElementById('btn-en').classList.toggle('active', l === 'en');
+      document.getElementById('btn-hi').classList.toggle('active', l === 'hi');
+    }
+
+    /* ══════════════════════════════════════════
+       MODE SWITCHER
+    ══════════════════════════════════════════ */
+    function setMode(m) {
+      const btnBasic = document.getElementById('btn-basic');
+      const btnPro   = document.getElementById('btn-pro');
+      const proSec   = document.getElementById('pro-section');
+
+      btnBasic.className = 'mode-btn ' + (m === 'basic' ? 'active-basic' : '');
+      btnPro.className   = 'mode-btn ' + (m === 'pro'   ? 'active-pro'   : '');
+      proSec.classList.toggle('visible', m === 'pro');
+    }
+
+    /* ══════════════════════════════════════════
+       CO-PILOT ASK
+    ══════════════════════════════════════════ */
+    function askCopilot() {
+      const q = document.getElementById('copilot-q');
+      if (q.value.trim()) {
+        alert('Co-Pilot: "' + q.value.trim() + '"\n\n(Connect to your AI backend to get real answers!)');
+        q.value = '';
+      }
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('copilot-q')
+        .addEventListener('keydown', e => { if (e.key === 'Enter') askCopilot(); });
+    });
+
+    /* ══════════════════════════════════════════
+       WEALTH CHART (Chart.js)
+    ══════════════════════════════════════════ */
+    const chartData = {
+      labels: ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'],
+      wealth: [82000, 90000, 95000, 104000, 110000, 118000, 124580],
+      sip:    [30000, 34000, 37000, 41000,  46000,  51000,  56000],
+    };
+
+    window.addEventListener('load', function () {
+      const ctx = document.getElementById('wealthChart').getContext('2d');
+      new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: chartData.labels,
+          datasets: [
+            {
+              label: 'Total Wealth',
+              data: chartData.wealth,
+              borderColor: '#635BFF',
+              backgroundColor: 'rgba(99,91,255,0.08)',
+              borderWidth: 2.5,
+              pointRadius: 4,
+              pointBackgroundColor: '#635BFF',
+              fill: true,
+              tension: 0.4,
+            },
+            {
+              label: 'SIP Portfolio',
+              data: chartData.sip,
+              borderColor: '#00FFC2',
+              backgroundColor: 'rgba(0,255,194,0.06)',
+              borderWidth: 2.5,
+              pointRadius: 4,
+              pointBackgroundColor: '#00FFC2',
+              fill: true,
+              tension: 0.4,
+            },
+          ],
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: {
+              labels: { color: '#94A3B8', font: { size: 12 }, boxWidth: 14, padding: 18 },
+            },
+            tooltip: {
+              backgroundColor: '#1E293B',
+              borderColor: 'rgba(99,91,255,0.3)',
+              borderWidth: 1,
+              titleColor: '#E2E8F0',
+              bodyColor: '#94A3B8',
+              callbacks: {
+                label: ctx => ' ₹' + ctx.parsed.y.toLocaleString('en-IN'),
+              },
+            },
+          },
+          scales: {
+            x: {
+              ticks: { color: '#64748B', font: { size: 11 } },
+              grid:  { color: 'rgba(255,255,255,0.04)' },
+            },
+            y: {
+              ticks: {
+                color: '#64748B',
+                font: { size: 11 },
+                callback: v => '₹' + Math.round(v / 1000) + 'k',
+              },
+              grid: { color: 'rgba(255,255,255,0.04)' },
+            },
+          },
+        },
+      });
+    });
+  </script>
+
+</body>
+</html>
